@@ -6,17 +6,19 @@ public class Player : MonoBehaviour
     public event Action OnLost;
     
     [SerializeField]
-    private float jump;
+    private float jumpForce;
 
-    private Rigidbody2D _rigidbody2D;
-    private bool _isJumping;
+    private new Rigidbody2D rigidbody2D;
+    private Animator animator;
+    private bool isJumping;
     private float initialX;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
+        rigidbody2D = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         initialX = transform.position.x;
     }
 
@@ -26,30 +28,42 @@ public class Player : MonoBehaviour
         if (transform.position.x < initialX)
         {
             transform.Translate(Vector3.right * Time.deltaTime);
+        }     
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && !isJumping)
+        {
+            rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+            isJumping = true;          
         }
 
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && !_isJumping)
-        {
-            _rigidbody2D.AddForce(new Vector2(0f, jump), ForceMode2D.Impulse);
-            _isJumping = true;
-        }
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            _rigidbody2D.AddForce(new Vector2(0f, -jump), ForceMode2D.Impulse);
+            rigidbody2D.AddForce(new Vector2(0f, -jumpForce), ForceMode2D.Impulse);          
         }
+
+        if (rigidbody2D.velocity.y > 0F)
+        {
+            animator.SetBool("isJumping", true);
+            animator.SetBool("isFalling", false);
+        }
+        if (rigidbody2D.velocity.y < 0F)
+        {
+            animator.SetBool("isFalling", true);
+            animator.SetBool("isJumping", false);
+        }       
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground" )
         {
-            _isJumping = false;
+            isJumping = false;
+            animator.SetBool("isFalling", false);
+            animator.SetBool("isJumping", false);
         }
 
         if(collision.gameObject.layer == 3)
         {
             OnLost();
-            //GameManager.instance.ShowGameOver();
         }
     }
 }

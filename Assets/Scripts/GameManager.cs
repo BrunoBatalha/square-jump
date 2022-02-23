@@ -5,9 +5,10 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
+  
     [SerializeField]
     private GameObject gameOver;
+    
     [SerializeField]
     private Text scoreUi;
 
