@@ -47,7 +47,7 @@ public class GroundGenerator : MonoBehaviour
     {
         if (groundsInstanties.Count < MaxGrounds)
         {
-            var ground = groundsInstanties.FirstOrDefault(g => g.transform.position.x < 0);
+            var ground = groundsInstanties.FirstOrDefault(g => g.transform.position.x  < 0);
             if (ground != null)
             {
                 groundsInstanties.Add(Instantiate(groundPrefab, new Vector3(ground.transform.position.x + groundWidth - 10, ground.transform.position.y, 0), Quaternion.identity));
