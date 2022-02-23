@@ -53,8 +53,11 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScore()
     {
-        score += Time.deltaTime;
-        scoreUi.text = score.ToString("F0");
+        if (!gameOver.activeSelf)
+        {
+            score += Time.deltaTime;
+            scoreUi.text = score.ToString("F0");
+        }
     }
 
     private void CheckExitGame()
