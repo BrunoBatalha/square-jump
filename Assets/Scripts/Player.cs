@@ -4,7 +4,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public event Action OnLost;
-    
+
     [SerializeField]
     private float jumpForce;
 
@@ -28,16 +28,21 @@ public class Player : MonoBehaviour
         if (transform.position.x < initialX)
         {
             transform.Translate(Vector3.right * Time.deltaTime);
-        }     
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && !isJumping)
+        }
+        if ((Input.GetKeyDown(KeyCode.Space) ||
+             Input.GetKeyDown(KeyCode.UpArrow) ||
+             Input.GetKeyDown(KeyCode.W) ||
+             ClickRightScreen()) && !isJumping)
         {
             rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-            isJumping = true;          
+            isJumping = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        if ((Input.GetKeyDown(KeyCode.S) ||
+            Input.GetKeyDown(KeyCode.DownArrow) ||
+            ClickLeftScreen()) && isJumping)
         {
-            rigidbody2D.AddForce(new Vector2(0f, -jumpForce), ForceMode2D.Impulse);          
+            rigidbody2D.AddForce(new Vector2(0f, -jumpForce), ForceMode2D.Impulse);
         }
 
         if (rigidbody2D.velocity.y > 0F)
@@ -49,19 +54,37 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("isFalling", true);
             animator.SetBool("isJumping", false);
-        }       
+        }
+    }
+
+    private bool ClickRightScreen()
+    {
+        if (Input.touchCount > 0)
+        {
+            return Input.GetTouch(0).position.x > Screen.width / 2;
+        }
+        return false;
+    }
+
+    private bool ClickLeftScreen()
+    {
+        if (Input.touchCount > 0)
+        {
+            return Input.GetTouch(0).position.x < Screen.width / 2;
+        }
+        return false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Ground" )
+        if (collision.gameObject.tag == "Ground")
         {
             isJumping = false;
             animator.SetBool("isFalling", false);
             animator.SetBool("isJumping", false);
         }
 
-        if(collision.gameObject.layer == 3)
+        if (collision.gameObject.layer == 3)
         {
             OnLost();
         }
